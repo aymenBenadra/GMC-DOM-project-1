@@ -1,57 +1,57 @@
-// Select all products
-const products = document.querySelectorAll('.card-body');
 const totalPriceElement = document.querySelector('.total');
 
-// Function to update the total price
+// Function to update total price based on current DOM
 function updateTotal() {
   let total = 0;
+
+  // Select all remaining products dynamically
+  const products = document.querySelectorAll('.list-products .card');
+
   products.forEach(product => {
-    const priceText = product.querySelector('.unit-price').textContent; // "100 $"
-    const price = parseFloat(priceText); // convert to number
+    const price = parseFloat(product.querySelector('.unit-price').textContent);
     const quantity = parseInt(product.querySelector('.quantity').textContent);
     total += price * quantity;
   });
+
   totalPriceElement.textContent = `${total} $`;
 }
 
-// Loop through each product to add event listeners
-products.forEach(product => {
-  const plusBtn = product.querySelector('.fa-plus-circle');
-  const minusBtn = product.querySelector('.fa-minus-circle');
-  const deleteBtn = product.querySelector('.fa-trash-alt');
-  const likeBtn = product.querySelector('.fa-heart');
-  const quantityElement = product.querySelector('.quantity');
+// Add event listeners to all products (using delegation)
+document.querySelector('.list-products').addEventListener('click', (e) => {
+  const target = e.target;
+
+  // Find the card the clicked element belongs to
+  const card = target.closest('.card');
+  if (!card) return;
+
+  const quantityElement = card.querySelector('.quantity');
 
   // Increase quantity
-  plusBtn.addEventListener('click', () => {
+  if (target.classList.contains('fa-plus-circle')) {
     quantityElement.textContent = parseInt(quantityElement.textContent) + 1;
     updateTotal();
-  });
+  }
 
   // Decrease quantity
-  minusBtn.addEventListener('click', () => {
+  if (target.classList.contains('fa-minus-circle')) {
     let qty = parseInt(quantityElement.textContent);
     if (qty > 0) {
       quantityElement.textContent = qty - 1;
       updateTotal();
     }
-  });
+  }
 
-  // Delete product
-  deleteBtn.addEventListener('click', () => {
-    product.remove();
+  // Delete card
+  if (target.classList.contains('fa-trash-alt')) {
+    card.remove();
     updateTotal();
-  });
+  }
 
-  // Like product
-  likeBtn.addEventListener('click', () => {
-    if (likeBtn.style.color === 'red') {
-      likeBtn.style.color = 'black';
-    } else {
-      likeBtn.style.color = 'red';
-    }
-  });
+  // Like card
+  if (target.classList.contains('fa-heart')) {
+    target.style.color = target.style.color === 'red' ? 'black' : 'red';
+  }
 });
 
-// Initial calculation
+// Initial total
 updateTotal();
